@@ -4,15 +4,17 @@ import (
 	"context"
 	"net/http"
 	"time"
+
+	"githhub.com/VSBrilyakov/test-app/configs"
 )
 
 type Server struct {
 	httpServer *http.Server
 }
 
-func (s *Server) Run(port string, handler http.Handler) error {
+func (s *Server) Run(config configs.ServerConfig, handler http.Handler) error {
 	s.httpServer = &http.Server{
-		Addr:           ":" + port,
+		Addr:           config.GetAddress(),
 		Handler:        handler,
 		MaxHeaderBytes: 1 << 20,
 		ReadTimeout:    10 * time.Second,
