@@ -26,3 +26,12 @@ func (s *SubPostgres) CreateSubscription(sub test_app.Subscription) (int, error)
 
 	return id, nil
 }
+
+func (s *SubPostgres) GetSubscription(subId int) (test_app.Subscription, error) {
+	var subscription test_app.Subscription
+
+	query := fmt.Sprintf("SELECT id, service_name, price, user_id, start_date, end_date FROM %s WHERE id = $1", subscriptionTable)
+	err := s.db.Get(&subscription, query, subId)
+
+	return subscription, err
+}

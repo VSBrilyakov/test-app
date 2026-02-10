@@ -16,3 +16,7 @@ func NewSubscriptionService(repo *repository.Repository) *SubscriptionService {
 func (s *SubscriptionService) CreateSubscription(sub test_app.Subscription) (int, error) {
 	return s.repo.CreateSubscription(sub)
 }
+
+func (s *SubscriptionService) GetSubscription(subId int) (test_app.Subscription, error) {
+	return s.repo.GetSubscription(subId)
+}

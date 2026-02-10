@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	testApp "githhub.com/VSBrilyakov/test-app"
 	"github.com/gin-gonic/gin"
@@ -23,7 +24,19 @@ func (h *Handler) createSubscribe(c *gin.Context) {
 }
 
 func (h *Handler) getSubscribe(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "invalid id param")
+		return
+	}
 
+	subscription, err := h.services.GetSubscription(id)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, subscription.GetJSON())
 }
 
 func (h *Handler) updateSubscribe(c *gin.Context) {

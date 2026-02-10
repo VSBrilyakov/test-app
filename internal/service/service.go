@@ -7,6 +7,7 @@ import (
 
 type SubscribeActions interface {
 	CreateSubscription(sub test_app.Subscription) (int, error)
+	GetSubscription(subId int) (test_app.Subscription, error)
 }
 type Service struct {
 	SubscribeActions
