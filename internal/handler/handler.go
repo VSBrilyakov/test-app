@@ -25,6 +25,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			subscribe.PUT("/:id", h.updateSubscribe)
 			subscribe.DELETE("/:id", h.deleteSubscribe)
 			subscribe.GET("/all", h.getAllSubscribes)
+			subscribe.GET("/sum", h.getSubsSum)
 		}
 	}
 

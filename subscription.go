@@ -7,7 +7,7 @@ import (
 )
 
 type Subscription struct {
-	ID          int          `json:"-" db:"id"`
+	ID          int          `json:"id,omitempty" db:"id"`
 	ServiceName string       `json:"service_name" binding:"required" db:"service_name"`
 	Price       int          `json:"price" binding:"required" db:"price"`
 	UserID      string       `json:"user_id" binding:"required" db:"user_id"`
@@ -15,7 +15,73 @@ type Subscription struct {
 	EndDate     sql.NullTime `json:"end_date,omitempty" time_format:"01-2006" db:"end_date"`
 }
 
+type UpdSubscription struct {
+	ServiceName *string       `json:"service_name" db:"service_name"`
+	Price       *int          `json:"price" db:"price"`
+	UserID      *string       `json:"user_id" db:"user_id"`
+	StartDate   *sql.NullTime `json:"start_date" time_format:"01-2006" db:"start_date"`
+	EndDate     *sql.NullTime `json:"end_date,omitempty" time_format:"01-2006" db:"end_date"`
+}
+
+func (u *UpdSubscription) UnmarshalJSON(data []byte) error {
+	var temp SubscriptionJSON
+	if err := json.Unmarshal(data, &temp); err != nil {
+		return err
+	}
+
+	if temp.ServiceName == "" {
+		u.ServiceName = nil
+	} else {
+		u.ServiceName = &temp.ServiceName
+	}
+
+	if temp.Price == 0 {
+		u.Price = nil
+	} else {
+		u.Price = &temp.Price
+	}
+
+	if temp.UserID == "" {
+		u.UserID = nil
+	} else {
+		u.UserID = &temp.UserID
+	}
+
+	if temp.StartDate != "" {
+		parsedTime, err := time.Parse("01-2006", temp.StartDate)
+		if err != nil {
+			return err
+		}
+
+		nt := &sql.NullTime{
+			Time:  parsedTime,
+			Valid: true,
+		}
+		u.StartDate = nt
+	} else {
+		u.StartDate = nil
+	}
+
+	if temp.EndDate != "" {
+		parsedTime, err := time.Parse("01-2006", temp.EndDate)
+		if err != nil {
+			return err
+		}
+
+		nt := &sql.NullTime{
+			Time:  parsedTime,
+			Valid: true,
+		}
+		u.EndDate = nt
+	} else {
+		u.EndDate = nil
+	}
+
+	return nil
+}
+
 type SubscriptionJSON struct {
+	Id          int    `json:"id,omitempty" db:"id"`
 	ServiceName string `json:"service_name" binding:"required" db:"service_name"`
 	Price       int    `json:"price" binding:"required" db:"price"`
 	UserID      string `json:"user_id" binding:"required" db:"user_id"`
@@ -32,6 +98,7 @@ func (s *Subscription) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal(SubscriptionJSON{
+		Id:          s.ID,
 		ServiceName: s.ServiceName,
 		Price:       s.Price,
 		UserID:      s.UserID,
@@ -46,6 +113,7 @@ func (s *Subscription) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	s.ID = temp.Id
 	s.ServiceName = temp.ServiceName
 	s.Price = temp.Price
 	s.UserID = temp.UserID
@@ -71,6 +139,7 @@ func (s *Subscription) UnmarshalJSON(data []byte) error {
 func (s *Subscription) GetJSON() SubscriptionJSON {
 	var subJSON SubscriptionJSON
 
+	subJSON.Id = s.ID
 	subJSON.ServiceName = s.ServiceName
 	subJSON.Price = s.Price
 	subJSON.UserID = s.UserID
