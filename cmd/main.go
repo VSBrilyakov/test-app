@@ -1,42 +1,60 @@
 package main
 
 import (
-	"log"
-
 	"githhub.com/VSBrilyakov/test-app/configs"
 	"githhub.com/VSBrilyakov/test-app/internal"
 	"githhub.com/VSBrilyakov/test-app/internal/handler"
 	"githhub.com/VSBrilyakov/test-app/internal/repository"
 	"githhub.com/VSBrilyakov/test-app/internal/service"
+	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
 
-func init() {
-	logrus.SetFormatter(&logrus.JSONFormatter{
-		TimestampFormat: "2006-01-02 15:04:05",
-		PrettyPrint:     true,
-	})
-	logrus.SetLevel(logrus.InfoLevel)
+var config *configs.Config
 
-	err := godotenv.Load()
+func init() {
+	var err error
+
+	err = godotenv.Load()
 	if err != nil {
-		log.Fatal("Ошибка загрузки .env файла")
+		logrus.Fatal("invalid .env file")
 	}
+
+	config, err = configs.NewConfig()
+	if err != nil {
+		logrus.Fatalf("config reading error: %s", err.Error())
+	}
+
+	logrus.SetFormatter(&logrus.TextFormatter{
+		ForceColors:               true,
+		DisableColors:             false,
+		EnvironmentOverrideColors: true,
+		FullTimestamp:             true,
+	})
+	var logLvl logrus.Level
+	if logLvl, err = logrus.ParseLevel(config.LogLevel); err != nil {
+		logrus.Fatalf("invalid log level: %s", err.Error())
+	}
+	logrus.SetLevel(logLvl)
+	logrus.Info("config loaded")
+
+	gin.SetMode(gin.ReleaseMode)
 }
 
 func main() {
-	config, err := configs.NewConfig()
-	if err != nil {
-		log.Fatalf("Config reading error: %s", err.Error())
-	}
-	logrus.Info("config loaded")
-
 	db, err := repository.NewPostgresDB(&config.Postgres)
 	if err != nil {
-		log.Fatalf("Postgres connection error: %s", err.Error())
+		logrus.Fatalf("postgres connection error: %s", err.Error())
 	}
 	logrus.Info("postgres connection established")
+
+	err = repository.DoMigrates(db)
+	if err != nil {
+		logrus.Fatalf("migrations applying error: %s", err.Error())
+	}
+	logrus.Info("migrations have been applied")
 
 	repo := repository.NewRepository(db)
 	services := service.NewService(repo)
@@ -44,6 +62,6 @@ func main() {
 
 	srv := new(internal.Server)
 	if err := srv.Run(config.Server, handlers.InitRoutes()); err != nil {
-		log.Fatalf("server run failed: %s", err.Error())
+		logrus.Fatalf("server run failed: %s", err.Error())
 	}
 }

@@ -8,3 +8,5 @@ postgres:
   name: "testdb"
   user: "admin"
   ssl_mode: "disable"
+
+log_level: debug

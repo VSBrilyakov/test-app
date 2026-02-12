@@ -23,6 +23,7 @@ type PostgresConfig struct {
 type Config struct {
 	Server   ServerConfig
 	Postgres PostgresConfig
+	LogLevel string `yaml:"log_level"`
 }
 
 func NewConfig() (*Config, error) {

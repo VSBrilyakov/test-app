@@ -23,6 +23,7 @@ func NewSubPostgres(db *sqlx.DB) *SubPostgres {
 func (s *SubPostgres) CreateSubscription(sub test_app.Subscription) (int, error) {
 	var id int
 	query := fmt.Sprintf("INSERT INTO %s (service_name, price, user_id, start_date, end_date) VALUES ($1, $2, $3, $4, $5) RETURNING id", subscriptionTable)
+	logrus.Debug(fmt.Sprintf("CreateSubscription query: %s", query))
 
 	row := s.db.QueryRow(query, sub.ServiceName, sub.Price, sub.UserID, sub.StartDate, sub.EndDate)
 	if err := row.Scan(&id); err != nil {
@@ -34,8 +35,9 @@ func (s *SubPostgres) CreateSubscription(sub test_app.Subscription) (int, error)
 
 func (s *SubPostgres) GetSubscription(subId int) (*test_app.Subscription, error) {
 	var sub test_app.Subscription
-
 	query := fmt.Sprintf("SELECT * FROM %s WHERE id = $1", subscriptionTable)
+	logrus.Debug(fmt.Sprintf("GetSubscription query: %s", query))
+
 	err := s.db.Get(&sub, query, subId)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, errors.New("subscription not found")
@@ -92,8 +94,8 @@ func (s *SubPostgres) UpdateSubscription(subId int, input test_app.UpdSubscripti
 	query := fmt.Sprintf("UPDATE %s tl SET %s WHERE tl.id = $%d", subscriptionTable, setQuery, argId)
 	args = append(args, subId)
 
-	logrus.Debug("updateQuery: %s", query)
-	logrus.Debug("args: %s", args)
+	logrus.Debug(fmt.Sprintf("updateQuery: %s", query))
+	logrus.Debug(fmt.Sprintf("args: %s", args))
 
 	_, err := s.db.Exec(query, args...)
 	return err
@@ -105,7 +107,7 @@ func (s *SubPostgres) DeleteSubscription(subId int) error {
 	}
 
 	query := fmt.Sprintf("DELETE FROM %s WHERE id = $1", subscriptionTable)
-	logrus.Debug("deleteQuery: %s", query)
+	logrus.Debug(fmt.Sprintf("deleteQuery: %s", query))
 	_, err := s.db.Exec(query, subId)
 
 	return err
@@ -114,6 +116,8 @@ func (s *SubPostgres) DeleteSubscription(subId int) error {
 func (s *SubPostgres) GetAllSubscriptions() (*[]test_app.Subscription, error) {
 	var subs []test_app.Subscription
 	query := fmt.Sprintf("SELECT * FROM %s ORDER BY id", subscriptionTable)
+	logrus.Debug("GetAllSubscriptions query: %s", query)
+
 	err := s.db.Select(&subs, query)
 	if err != nil {
 		return nil, err
@@ -126,6 +130,9 @@ func (s *SubPostgres) GetSubsSumByUserID(userId, serviceName string, dateFrom, d
 	var tp int
 	query := fmt.Sprintf("SELECT COALESCE(SUM(price), 0)::INTEGER AS total_price FROM %s WHERE user_id = $1 AND service_name = $2 AND start_date BETWEEN $3 AND $4",
 		subscriptionTable)
+	logrus.Debug(fmt.Sprintf("GetSubsSumByUserID: %s", query))
+	logrus.Debug(fmt.Sprintf("args: %s %s %s %s", userId, serviceName, dateFrom, dateTo))
+
 	row := s.db.QueryRow(query, userId, serviceName, dateFrom, dateTo)
 	if err := row.Scan(&tp); err != nil {
 		return 0, err

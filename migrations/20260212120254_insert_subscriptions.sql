@@ -1,3 +1,7 @@
+-- +goose Up
+-- +goose StatementBegin
+SELECT 'up SQL query';
+-- +goose StatementEnd
 INSERT INTO subscription (service_name, price, user_id, start_date, end_date) VALUES
     ('Web Hosting', 1200, gen_random_uuid(), '2025-05-01', '2025-12-01'),
     ('Domain Name', 500, gen_random_uuid(), '2024-02-01', '2025-02-01'),
@@ -9,3 +13,9 @@ INSERT INTO subscription (service_name, price, user_id, start_date, end_date) VA
     ('Contextual Advertising', 35000,gen_random_uuid(), '2024-02-01', '2024-08-01'),
     ('SMM Management', 18000, gen_random_uuid(), '2024-06-01', NULL),
     ('Security Audit', 42000, gen_random_uuid(), '2024-03-01', '2024-04-01');
+
+-- +goose Down
+-- +goose StatementBegin
+SELECT 'down SQL query';
+-- +goose StatementEnd
+TRUNCATE TABLE subscription;

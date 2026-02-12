@@ -5,6 +5,7 @@ import (
 
 	"githhub.com/VSBrilyakov/test-app/configs"
 	"github.com/jmoiron/sqlx"
+	"github.com/pressly/goose/v3"
 
 	_ "github.com/lib/pq"
 )
@@ -26,4 +27,16 @@ func NewPostgresDB(cfg *configs.PostgresConfig) (*sqlx.DB, error) {
 	}
 
 	return db, nil
+}
+
+func DoMigrates(db *sqlx.DB) error {
+	if err := goose.SetDialect("postgres"); err != nil {
+		return err
+	}
+
+	if err := goose.Up(db.DB, "./migrations"); err != nil {
+		return err
+	}
+
+	return nil
 }
