@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"githhub.com/VSBrilyakov/test-app/configs"
+	"github.com/VSBrilyakov/test-app/configs"
 )
 
 type Server struct {

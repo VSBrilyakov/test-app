@@ -3,7 +3,7 @@ package repository
 import (
 	"time"
 
-	test_app "githhub.com/VSBrilyakov/test-app"
+	test_app "github.com/VSBrilyakov/test-app"
 	"github.com/jmoiron/sqlx"
 )
 

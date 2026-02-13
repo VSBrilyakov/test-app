@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	testApp "githhub.com/VSBrilyakov/test-app"
+	testApp "github.com/VSBrilyakov/test-app"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -21,7 +21,17 @@ const (
 	dateFromAfterDateToError = "date_from cannot be after date_to"
 )
 
-func (h *Handler) createSubscribe(c *gin.Context) {
+// @Summary CreateSubscription
+// @Tags subscriptions
+// @Description Add a subscription information into database
+// @ID create-subscription
+// @Accept  json
+// @Produce  json
+// @Param input body test_app.Subscription true "Subscription main info"
+// @Success 200 {object} successNewSubMsg
+// @Failure 500 {object} errorMsg
+// @Router /api/v1/subscribe [post]
+func (h *Handler) createSubscription(c *gin.Context) {
 	logrus.Debug(fmt.Sprintf("incoming: %s", c.Request.URL.String()))
 
 	var input testApp.Subscription
@@ -33,12 +43,23 @@ func (h *Handler) createSubscribe(c *gin.Context) {
 	id, err := h.services.CreateSubscription(input)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
 	}
 
-	newSuccessResponse(c, gin.H{"id": id})
+	newSuccessResponse(c, successNewSubMsg{Id: id})
 }
 
-func (h *Handler) getSubscribe(c *gin.Context) {
+// @Summary GetSubscription
+// @Tags subscriptions
+// @Description Get a subscription information from database by subscription id
+// @ID get-subscription
+// @Produce  json
+// @Param id path int true "Subscription ID"
+// @Success 200 {object} test_app.SubscriptionJSON
+// @Failure 400 {object} errorMsg
+// @Failure 500 {object} errorMsg
+// @Router /api/v1/subscribe/{id} [get]
+func (h *Handler) getSubscription(c *gin.Context) {
 	logrus.Debug(fmt.Sprintf("incoming: %s", c.Request.URL.String()))
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -56,7 +77,18 @@ func (h *Handler) getSubscribe(c *gin.Context) {
 	newSuccessResponse(c, sub.GetJSON())
 }
 
-func (h *Handler) updateSubscribe(c *gin.Context) {
+// @Summary UpdSubscription
+// @Tags subscriptions
+// @Description Update subscription information
+// @ID upd-subscription
+// @Accept  json
+// @Param input body test_app.UpdSubscription true "Subscription updated info"
+// @Param id path int true "Subscription ID"
+// @Success 200 {object} emptyResponse
+// @Failure 400 {object} errorMsg
+// @Failure 500 {object} errorMsg
+// @Router /api/v1/subscribe/{id} [put]
+func (h *Handler) updateSubscription(c *gin.Context) {
 	logrus.Debug(fmt.Sprintf("incoming: %s", c.Request.URL.String()))
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -76,10 +108,19 @@ func (h *Handler) updateSubscribe(c *gin.Context) {
 		return
 	}
 
-	newSuccessResponse(c, gin.H{"success": "ok"})
+	newSuccessResponse(c, emptyResponse{})
 }
 
-func (h *Handler) deleteSubscribe(c *gin.Context) {
+// @Summary DeleteSubscription
+// @Tags subscriptions
+// @Description Remove subscription information from database by subscription id
+// @ID del-subscription
+// @Param id path int true "Subscription ID"
+// @Success 200 {object} emptyResponse
+// @Failure 400 {object} errorMsg
+// @Failure 500 {object} errorMsg
+// @Router /api/v1/subscribe/{id} [delete]
+func (h *Handler) deleteSubscription(c *gin.Context) {
 	logrus.Debug(fmt.Sprintf("incoming: %s", c.Request.URL.String()))
 
 	id, err := strconv.Atoi(c.Param("id"))
@@ -93,10 +134,10 @@ func (h *Handler) deleteSubscribe(c *gin.Context) {
 		return
 	}
 
-	newSuccessResponse(c, gin.H{"success": "ok"})
+	newSuccessResponse(c, emptyResponse{})
 }
 
-func (h *Handler) getAllSubscribes(c *gin.Context) {
+func (h *Handler) getAllSubscriptions(c *gin.Context) {
 	logrus.Debug(fmt.Sprintf("incoming: %s", c.Request.URL.String()))
 
 	subs, err := h.services.GetAllSubscriptions()

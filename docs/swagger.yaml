@@ -1,0 +1,202 @@
+definitions:
+  handler.emptyResponse:
+    type: object
+  handler.errorMsg:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.successNewSubMsg:
+    properties:
+      id:
+        example: 1
+        type: integer
+    type: object
+  test_app.Subscription:
+    properties:
+      end_date:
+        example: 07-2021
+        type: string
+      id:
+        type: integer
+      price:
+        example: 1000
+        type: integer
+      service_name:
+        example: Web Hosting
+        type: string
+      start_date:
+        example: 06-2020
+        type: string
+      user_id:
+        example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  test_app.SubscriptionJSON:
+    properties:
+      end_date:
+        example: 07-2021
+        type: string
+      id:
+        type: integer
+      price:
+        example: 1000
+        type: integer
+      service_name:
+        example: Web Hosting
+        type: string
+      start_date:
+        example: 06-2020
+        type: string
+      user_id:
+        example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        type: string
+    required:
+    - price
+    - service_name
+    - start_date
+    - user_id
+    type: object
+  test_app.UpdSubscription:
+    properties:
+      end_date:
+        example: 07-2021
+        type: string
+      price:
+        example: 1000
+        type: integer
+      service_name:
+        example: Web Hosting
+        type: string
+      start_date:
+        example: 06-2020
+        type: string
+      user_id:
+        example: f47ac10b-58cc-4372-a567-0e02b2c3d479
+        type: string
+    type: object
+info:
+  contact: {}
+  description: API Server for TestApp Application
+  title: Test App API
+  version: "1.0"
+paths:
+  /api/v1/subscribe:
+    post:
+      consumes:
+      - application/json
+      description: Add a subscription information into database
+      operationId: create-subscription
+      parameters:
+      - description: Subscription main info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/test_app.Subscription'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.successNewSubMsg'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMsg'
+      summary: CreateSubscription
+      tags:
+      - subscriptions
+  /api/v1/subscribe/{id}:
+    delete:
+      description: Remove subscription information from database by subscription id
+      operationId: del-subscription
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.emptyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMsg'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMsg'
+      summary: DeleteSubscription
+      tags:
+      - subscriptions
+    get:
+      description: Get a subscription information from database by subscription id
+      operationId: get-subscription
+      parameters:
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/test_app.SubscriptionJSON'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMsg'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMsg'
+      summary: GetSubscription
+      tags:
+      - subscriptions
+    put:
+      consumes:
+      - application/json
+      description: Update subscription information
+      operationId: upd-subscription
+      parameters:
+      - description: Subscription updated info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/test_app.UpdSubscription'
+      - description: Subscription ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.emptyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorMsg'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorMsg'
+      summary: UpdSubscription
+      tags:
+      - subscriptions
+swagger: "2.0"

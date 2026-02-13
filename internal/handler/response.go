@@ -12,9 +12,15 @@ type errorMsg struct {
 	Message string `json:"message"`
 }
 
+type successNewSubMsg struct {
+	Id int `json:"id" example:"1"`
+}
+
+type emptyResponse struct{}
+
 func newSuccessResponse(c *gin.Context, data interface{}) {
 	logrus.Trace("ok response, data: %v", data)
-	c.JSON(http.StatusOK, gin.H{"data": data})
+	c.JSON(http.StatusOK, data)
 }
 
 func newErrorResponse(c *gin.Context, statusCode int, message string) {

@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	test_app "githhub.com/VSBrilyakov/test-app"
+	test_app "github.com/VSBrilyakov/test-app"
 	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )

@@ -8,19 +8,19 @@ import (
 
 type Subscription struct {
 	ID          int          `json:"id,omitempty" db:"id"`
-	ServiceName string       `json:"service_name" binding:"required" db:"service_name"`
-	Price       int          `json:"price" binding:"required" db:"price"`
-	UserID      string       `json:"user_id" binding:"required" db:"user_id"`
-	StartDate   time.Time    `json:"start_date" binding:"required" time_format:"01-2006" db:"start_date"`
-	EndDate     sql.NullTime `json:"end_date,omitempty" time_format:"01-2006" db:"end_date"`
+	ServiceName string       `json:"service_name" binding:"required" db:"service_name" example:"Web Hosting"`
+	Price       int          `json:"price" binding:"required" db:"price" example:"1000"`
+	UserID      string       `json:"user_id" binding:"required" db:"user_id" example:"f47ac10b-58cc-4372-a567-0e02b2c3d479"`
+	StartDate   time.Time    `json:"start_date" binding:"required" time_format:"01-2006" db:"start_date" example:"06-2020"`
+	EndDate     sql.NullTime `json:"end_date,omitempty" time_format:"01-2006" db:"end_date" swaggertype:"string" example:"07-2021"`
 }
 
 type UpdSubscription struct {
-	ServiceName *string       `json:"service_name" db:"service_name"`
-	Price       *int          `json:"price" db:"price"`
-	UserID      *string       `json:"user_id" db:"user_id"`
-	StartDate   *sql.NullTime `json:"start_date" time_format:"01-2006" db:"start_date"`
-	EndDate     *sql.NullTime `json:"end_date,omitempty" time_format:"01-2006" db:"end_date"`
+	ServiceName *string       `json:"service_name" db:"service_name" example:"Web Hosting"`
+	Price       *int          `json:"price" db:"price" example:"1000"`
+	UserID      *string       `json:"user_id" db:"user_id" example:"f47ac10b-58cc-4372-a567-0e02b2c3d479"`
+	StartDate   *sql.NullTime `json:"start_date" time_format:"01-2006" db:"start_date" swaggertype:"string" example:"06-2020"`
+	EndDate     *sql.NullTime `json:"end_date,omitempty" time_format:"01-2006" db:"end_date" swaggertype:"string" example:"07-2021"`
 }
 
 func (u *UpdSubscription) UnmarshalJSON(data []byte) error {
@@ -82,11 +82,11 @@ func (u *UpdSubscription) UnmarshalJSON(data []byte) error {
 
 type SubscriptionJSON struct {
 	Id          int    `json:"id,omitempty" db:"id"`
-	ServiceName string `json:"service_name" binding:"required" db:"service_name"`
-	Price       int    `json:"price" binding:"required" db:"price"`
-	UserID      string `json:"user_id" binding:"required" db:"user_id"`
-	StartDate   string `json:"start_date" binding:"required" time_format:"01-2006" db:"start_date"`
-	EndDate     string `json:"end_date,omitempty" time_format:"01-2006" db:"end_date"`
+	ServiceName string `json:"service_name" binding:"required" db:"service_name" example:"Web Hosting"`
+	Price       int    `json:"price" binding:"required" db:"price" example:"1000"`
+	UserID      string `json:"user_id" binding:"required" db:"user_id" example:"f47ac10b-58cc-4372-a567-0e02b2c3d479"`
+	StartDate   string `json:"start_date" binding:"required" time_format:"01-2006" db:"start_date" example:"06-2020"`
+	EndDate     string `json:"end_date,omitempty" time_format:"01-2006" db:"end_date" example:"07-2021"`
 }
 
 func (s *Subscription) MarshalJSON() ([]byte, error) {

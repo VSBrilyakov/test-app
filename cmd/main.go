@@ -1,11 +1,14 @@
 package main
 
 import (
-	"githhub.com/VSBrilyakov/test-app/configs"
-	"githhub.com/VSBrilyakov/test-app/internal"
-	"githhub.com/VSBrilyakov/test-app/internal/handler"
-	"githhub.com/VSBrilyakov/test-app/internal/repository"
-	"githhub.com/VSBrilyakov/test-app/internal/service"
+	"strconv"
+
+	"github.com/VSBrilyakov/test-app/configs"
+	"github.com/VSBrilyakov/test-app/docs"
+	"github.com/VSBrilyakov/test-app/internal"
+	"github.com/VSBrilyakov/test-app/internal/handler"
+	"github.com/VSBrilyakov/test-app/internal/repository"
+	"github.com/VSBrilyakov/test-app/internal/service"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
@@ -40,9 +43,15 @@ func init() {
 	logrus.SetLevel(logLvl)
 	logrus.Info("config loaded")
 
+	docs.SwaggerInfo.Host = "localhost:" + strconv.Itoa(config.Server.Port)
+	docs.SwaggerInfo.BasePath = "/"
+
 	gin.SetMode(gin.ReleaseMode)
 }
 
+// @title Test App API
+// @version 1.0
+// @description API Server for TestApp Application
 func main() {
 	db, err := repository.NewPostgresDB(&config.Postgres)
 	if err != nil {
@@ -54,7 +63,6 @@ func main() {
 	if err != nil {
 		logrus.Fatalf("migrations applying error: %s", err.Error())
 	}
-	logrus.Info("migrations have been applied")
 
 	repo := repository.NewRepository(db)
 	services := service.NewService(repo)

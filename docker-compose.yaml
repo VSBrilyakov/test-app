@@ -13,6 +13,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      swagger:
+        condition: service_healthy
     restart:
       on-failure
     networks:
@@ -43,6 +45,30 @@ services:
         limits:
           cpus: '1'
           memory: 4G
+    networks:
+      - app-network
+
+  swagger:
+    image: swaggerapi/swagger-ui:latest
+    container_name: swagger-docs
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./swagger:/usr/share/nginx/html/swagger
+    environment:
+      - SWAGGER_JSON=/usr/share/nginx/html/swagger/openapi.yaml
+      - BASE_URL=/swagger
+      - PORT=8081
+      - LAYOUT=BaseLayout
+      - DEEP_LINKING=true
+      - DISPLAY_REQUEST_DURATION=true
+      - FILTER=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/swagger"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     networks:
       - app-network
 

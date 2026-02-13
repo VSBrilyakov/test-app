@@ -3,8 +3,8 @@ package service
 import (
 	"time"
 
-	test_app "githhub.com/VSBrilyakov/test-app"
-	"githhub.com/VSBrilyakov/test-app/internal/repository"
+	test_app "github.com/VSBrilyakov/test-app"
+	"github.com/VSBrilyakov/test-app/internal/repository"
 )
 
 type SubscriptionService struct {
